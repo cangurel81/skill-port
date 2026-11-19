@@ -13,17 +13,23 @@ from skill_port.verify import verify_skill
 GOOD_DESCRIPTION = "Audit and port skills between harnesses with a deterministic CLI."
 
 
+def write_lf(path, text):
+    """Path.write_text(newline=...) needs Python 3.10; CI also runs 3.9."""
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
 def write_skill(root, name="demo", fields=None, body="Instructions.\n", extra=None):
     folder = Path(root) / name
     folder.mkdir(parents=True, exist_ok=True)
     if fields is None:
         fields = {"name": name, "description": GOOD_DESCRIPTION}
     text = dump(fields, list(fields), body)
-    (folder / "SKILL.md").write_text(text, encoding="utf-8", newline="\n")
+    write_lf(folder / "SKILL.md", text)
     for relative, content in (extra or {}).items():
         path = folder / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8", newline="\n")
+        write_lf(path, content)
     return folder
 
 

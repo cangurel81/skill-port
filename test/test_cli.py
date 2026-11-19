@@ -16,7 +16,9 @@ def make_source(fields=None, body="Instructions.\n"):
     root.mkdir(parents=True)
     if fields is None:
         fields = {"name": "demo", "description": GOOD_DESCRIPTION}
-    (root / "SKILL.md").write_text(dump(fields, list(fields), body), encoding="utf-8", newline="\n")
+    # Path.write_text(newline=...) needs Python 3.10; CI also runs 3.9.
+    with (root / "SKILL.md").open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(dump(fields, list(fields), body))
     return root
 
 
